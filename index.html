@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Equilibrio</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#B8923A"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#FBF7EE;--c:#fff;--tx:#2b2418;--g:#B8923A;--g2:#8a6a1f;--ln:#e8dcc0}
+[data-t=dark]{--bg:#15130f;--c:#201d16;--tx:#f1e9d6;--g:#b8923a;--g2:#e7c874;--ln:#3a3426}
+body{margin:0;background:var(--bg);color:var(--tx);font:1rem/1.5 system-ui,sans-serif}
+header{position:sticky;top:0;background:var(--g);color:#fff;display:flex;align-items:center;gap:.3rem;padding:.5rem .7rem;z-index:5}
+header h1{font:700 1.15rem Georgia,serif;margin:0;flex:1}
+header button{background:rgba(255,255,255,.22);color:#fff;border:0;border-radius:.6rem;padding:.4rem .6rem;font-size:1rem}
+main{padding:1rem;max-width:720px;margin:auto;padding-bottom:6rem}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--c);border-top:1px solid var(--ln);z-index:5}
+nav button{flex:1;background:0;border:0;padding:.4rem 0;color:var(--tx);font-size:.7rem;opacity:.6}nav button.on{opacity:1;color:var(--g2);font-weight:700}nav span{display:block;font-size:1.4rem}
+.card{background:var(--c);border:1px solid var(--ln);border-radius:1rem;padding:1rem;margin:.7rem 0}
+.btn{background:var(--g);color:#fff;border:0;border-radius:.8rem;padding:.8rem 1.2rem;font-size:1rem;font-weight:600;width:100%;margin:.3rem 0}
+.btn.o{background:0;border:2px solid var(--g);color:var(--g2)}
+input,select,textarea{width:100%;box-sizing:border-box;padding:.7rem;border:1px solid var(--ln);border-radius:.7rem;background:var(--c);color:var(--tx);font-size:1rem;margin:.3rem 0}
+.chip{padding:.35rem .8rem;border:1px solid var(--g);border-radius:2rem;margin:.15rem;color:var(--g2);background:0;font-size:.85rem}.chip.on{background:var(--g);color:#fff}
+h2,h3{font-family:Georgia,serif;color:var(--g2);margin:.3rem 0}
+details{background:var(--c);border:1px solid var(--ln);border-radius:.9rem;padding:.7rem 1rem;margin:.5rem 0}summary{font-weight:600;cursor:pointer}
+.b{display:inline-block;padding:.1rem .6rem;border-radius:1rem;background:var(--ln);color:var(--tx);font-size:.8rem;margin-right:.3rem}.red{background:#c0392b;color:#fff}
+small,.s{opacity:.75;font-size:.85rem}#login{max-width:420px;margin:auto;padding:1.5rem;text-align:center}#login h1{font-family:Georgia,serif;color:var(--g2)}
+.bar{height:1.6rem;border-radius:.5rem;color:#fff;padding:0 .6rem;margin:.2rem 0;line-height:1.6rem;font-size:.85rem}
+@media print{header,nav,.no{display:none!important}}
+</style></head><body>
+<div id="login"><img src="icon-192.png" width="96" alt="" style="border-radius:22px">
+<h1>Equilibrio</h1><p>¡Qué bueno que estés acá! Vivir bien con diabetes también se disfruta en la mesa.</p>
+<button class="btn" id="inst">📲 Instalar la app en mi celular</button><p class="s" id="hint"></p>
+<hr style="border:0;border-top:1px solid var(--ln);margin:1.2rem 0"><p><b>Ingresá tu código de acceso</b></p>
+<input id="code" placeholder="Ej: DEMO-2026" autocapitalize="characters"><button class="btn" onclick="enter()">Entrar</button><p id="err" style="color:#c0392b"></p></div>
+<div id="app" hidden><header><h1>Equilibrio</h1><button onclick="fs(-1)" aria-label="Letra más chica">A−</button><button onclick="fs(1)" aria-label="Letra más grande">A+</button><button onclick="theme()" aria-label="Día o noche" id="th">🌙</button></header><main id="v"></main>
+<nav><button data-t="home"><span>🏠</span>Inicio</button><button data-t="rec"><span>🥗</span>Recetas</button><button data-t="dia"><span>📒</span>Diario</button><button data-t="tips"><span>💡</span>Cuidados</button><button data-t="net"><span>🔎</span>Buscar</button></nav></div>
+<script>
+const $=s=>document.querySelector(s),L=localStorage,J=(k,d)=>{try{return JSON.parse(L[k])||d}catch(e){return d}};
+const CODES=["DEMO-2026"]; // ← reemplazá por tus códigos (en mayúsculas)
+const R=[
+{n:"Tortilla de espinaca y queso",c:"Desayuno",t:10,h:3,i:["2 huevos","1 puñado de espinaca","2 cdas de ricota","1 cdita de aceite de oliva","Sal y pimienta"],p:"Salteá la espinaca 1 minuto. Batí los huevos con la ricota, sumalos y cociná tapado a fuego bajo 4 minutos de cada lado.",s:"Acompañá con té o café sin azúcar."},
+{n:"Avena con chía y manzana",c:"Desayuno",t:10,h:28,i:["3 cdas de avena","1 cda de chía","½ manzana en cubitos","Canela","¾ taza de leche o agua"],p:"Cociná la avena con la leche 5 minutos. Sumá chía, manzana y canela. Dejá reposar 2 minutos.",s:"Con yogur natural sin azúcar queda más saciante."},
+{n:"Tostada integral con palta y huevo",c:"Desayuno",t:8,h:15,i:["1 rebanada de pan integral","¼ de palta","1 huevo","Limón y pimienta"],p:"Pisá la palta con limón y untá la tostada. Sumá el huevo poché o a la plancha.",s:"Elegí pan con buena cantidad de fibra."},
+{n:"Ensalada tibia de lentejas",c:"Almuerzo",t:15,h:30,i:["1 taza de lentejas cocidas","1 tomate","½ pepino","¼ de cebolla morada","Perejil, limón y aceite de oliva"],p:"Mezclá todo, condimentá con limón, aceite y sal. Servila tibia o fría.",s:"Sumá un huevo duro o pollo para más proteína."},
+{n:"Pollo al horno con verduras",c:"Almuerzo",t:40,h:8,i:["1 pechuga o 2 muslos sin piel","1 calabacín","1 berenjena","1 morrón","Ajo, orégano, aceite de oliva"],p:"Cortá las verduras, condimentá todo y llevá a horno medio 35 minutos hasta que el pollo esté bien cocido.",s:"Rinde para dos días en la heladera."},
+{n:"Zapallitos rellenos",c:"Cena",t:35,h:10,i:["2 zapallitos redondos","150 g de carne picada magra","½ cebolla","1 tomate","Queso rallado y orégano"],p:"Ahuecá los zapallitos y hervilos 5 minutos. Rehogá cebolla, carne y la pulpa picada. Rellená, espolvoreá queso y gratiná 15 minutos.",s:"Podés reemplazar la carne por atún o lentejas."},
+{n:"Pescado al limón con brócoli",c:"Cena",t:25,h:6,i:["1 filet de merluza","1 taza de brócoli","1 limón","Ajo, perejil, aceite de oliva"],p:"Condimentá el pescado con limón y ajo y cocinalo 12 minutos al horno. Hervilo el brócoli 5 minutos y servilos juntos.",s:"Sumá media taza de arroz integral si tu plan lo permite."},
+{n:"Sopa de verduras con garbanzos",c:"Cena",t:30,h:25,i:["½ taza de garbanzos cocidos","1 puerro","1 zanahoria","1 zapallito","1 taza de caldo casero","Comino"],p:"Rehogá el puerro, sumá las verduras en cubos y el caldo. Cociná 15 minutos, agregá los garbanzos y el comino.",s:"Pisá una parte para que quede cremosa."},
+{n:"Yogur con nueces y canela",c:"Snack",t:3,h:8,i:["1 pote de yogur natural sin azúcar","4 nueces","Canela"],p:"Mezclá todo y comé enseguida.",s:"Un snack con proteínas y grasas buenas ayuda a no llegar con tanta hambre a la comida."},
+{n:"Mousse de palta y cacao",c:"Postre",t:10,h:8,i:["½ palta madura","1 cda de cacao amargo","Edulcorante a gusto","Chorrito de leche"],p:"Procesá todo hasta que quede cremoso. Enfriá 30 minutos.",s:"Probá primero y sumá edulcorante de a poco."}];
+const TIPS=[["🍬 Si te baja el azúcar (hipoglucemia)","Señales: temblor, sudor frío, hambre repentina, mareo o confusión. Si podés medirte y estás por debajo de 70 mg/dL, tomá unos 15 g de hidratos de acción rápida (medio vaso de jugo o 1 cda de azúcar o miel), esperá 15 minutos y volvé a medir. Si no mejora o hay confusión fuerte, pedí ayuda médica urgente."],["🦶 Cuidado de los pies","Revisalos todos los días (también la planta), secá bien entre los dedos, hidratalos sin crema entre ellos, usá calzado cómodo y no camines descalza/o. Consultá ante cualquier herida, ampolla o enrojecimiento."],["🍽️ El plato equilibrado","Medio plato de verduras, un cuarto de proteínas y un cuarto de hidratos integrales. Tomá agua y mirá en las etiquetas los hidratos totales: «sin azúcar agregada» no es lo mismo que «sin hidratos»."],["🚶 Movimiento","Caminar unos 30 minutos la mayoría de los días ayuda mucho, sobre todo después de comer. Antes de empezar una rutina nueva consultá a tu médico, y si usás medicación que puede bajar el azúcar, llevá siempre algo para corregirlo."],["📋 Controles que no hay que olvidar","Hemoglobina glicosilada (HbA1c) según te indique tu médico, control de ojos una vez al año, riñón, presión, colesterol, pies y salud bucal."],["🤒 Días de enfermedad","Hidratate bien, medí el azúcar con más frecuencia y no suspendas la medicación sin consultar. Pedí indicaciones a tu equipo de salud."],["🚨 Cuándo consultar urgente","Sed intensa con valores muy altos que no bajan, vómitos, dolor abdominal, respiración rápida, somnolencia o confusión, y cualquier bajón que no se corrige."]];
+let tab="home",cat="Todas",q="";
+const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString();
+let dp;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e});
+$("#inst").onclick=async()=>{if(dp){dp.prompt();dp=null}else $("#hint").innerHTML=/iphone|ipad/i.test(navigator.userAgent)?"En iPhone: tocá <b>Compartir</b> y luego <b>Agregar a pantalla de inicio</b>.":"Tocá los <b>tres puntitos ⋮</b> del navegador y elegí <b>Instalar app</b>."};
+if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)$("#inst").hidden=true;
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+function enter(){const v=$("#code").value.trim().toUpperCase();if(CODES.includes(v)){L.ok=1;start()}else $("#err").textContent="Ese código no es válido. Revisalo y probá de nuevo."}
+function start(){$("#login").hidden=true;$("#app").hidden=false;fs(0);apply();go("home")}
+function apply(){document.body.dataset.t=L.th||"l";$("#th").textContent=L.th=="dark"?"☀️":"🌙"}
+function theme(){L.th=L.th=="dark"?"l":"dark";apply()}
+function fs(d){const s=Math.min(26,Math.max(15,(+L.fs||18)+d*2));L.fs=s;document.documentElement.style.fontSize=s+"px"}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
+function go(t){tab=t;document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));$("#v").innerHTML=V[t]();scrollTo(0,0)}
+const day=()=>today().slice(0,10),H=["Tomé agua","Caminé","Revisé mis pies","Tomé mi medicación","Comí verduras"];
+function hab(i){const h=J("hab",{});h[day()]=h[day()]||[];const a=h[day()],k=a.indexOf(i);k<0?a.push(i):a.splice(k,1);L.hab=JSON.stringify(h);go("home")}
+function fav(i){const f=J("fav",[]);const k=f.indexOf(i);k<0?f.push(i):f.splice(k,1);L.fav=JSON.stringify(f);go("rec")}
+function rc(r,i){const f=J("fav",[]).includes(i);return `<details><summary>${r.n}</summary><p><span class="b">${r.c}</span><span class="b">⏱ ${r.t} min</span><span class="b">≈ ${r.h} g hidratos</span></p><b>Ingredientes (1 porción)</b><ul>${r.i.map(x=>`<li>${x}</li>`).join("")}</ul><b>Preparación</b><p>${r.p}</p><p>💡 ${r.s}</p><button class="chip ${f?"on":""}" onclick="fav(${i})">${f?"♥ En favoritas":"♡ Guardar"}</button></details>`}
+const V={
+home(){const h=J("hab",{})[day()]||[],g=J("glu",[]),u=g[0],r=R.indexOf(R[new Date().getDate()%R.length]);
+return `<h2>¡Hola! Qué bueno verte 🌿</h2><div class="card"><h3>Receta del día</h3>${rc(R[r],r)}</div>
+<div class="card"><h3>Tu plato ideal</h3><div class="bar" style="background:#4f8a4b;width:100%">½ verduras</div><div class="bar" style="background:#b8623a;width:50%">¼ proteínas</div><div class="bar" style="background:var(--g);width:50%">¼ hidratos integrales</div></div>
+<div class="card"><h3>Hábitos de hoy (${h.length}/${H.length})</h3>${H.map((x,i)=>`<label style="display:block;padding:.3rem 0"><input type="checkbox" style="width:auto" ${h.includes(i)?"checked":""} onchange="hab(${i})"> ${x}</label>`).join("")}</div>
+<div class="card"><h3>Último registro</h3>${u?`<b style="font-size:1.6rem">${u.v}</b> mg/dL <small>${u.m} · ${u.d.slice(8,10)}/${u.d.slice(5,7)}</small>`:"Todavía no cargaste ninguno. Probá en el Diario 📒"}</div>
+<p class="s">Esta app es informativa y no reemplaza a tu médico. Tus valores objetivo los define tu equipo de salud.</p>`},
+rec(){const cs=["Todas","Favoritas","Desayuno","Almuerzo","Cena","Snack","Postre"],f=J("fav",[]);
+const l=R.map((r,i)=>[r,i]).filter(([r,i])=>(cat=="Todas"||(cat=="Favoritas"?f.includes(i):r.c==cat))&&(r.n+r.i.join()).toLowerCase().includes(q.toLowerCase()));
+return `<h2>Recetas</h2><input placeholder="Buscar receta o ingrediente" value="${q}" oninput="q=this.value;go('rec');$('#v input').focus();$('#v input').setSelectionRange(q.length,q.length)">${cs.map(c=>`<button class="chip ${cat==c?"on":""}" onclick="cat='${c}';go('rec')">${c}</button>`).join("")}${l.map(([r,i])=>rc(r,i)).join("")||"<p>No hay recetas acá todavía.</p>"}<p class="s">Los hidratos son valores aproximados por porción.</p>`},
+dia(){const g=J("glu",[]),w=g.filter(x=>Date.now()-new Date(x.d)<6048e5),av=w.length?Math.round(w.reduce((a,x)=>a+x.v,0)/w.length):"-";
+return `<h2>Diario para mi médico</h2><div class="card no"><input id="gv" type="number" inputmode="numeric" placeholder="Glucemia (mg/dL)"><select id="gm"><option>En ayunas</option><option>Antes de comer</option><option>2 h después de comer</option><option>Antes de dormir</option><option>Otro momento</option></select><textarea id="gn" rows="2" placeholder="Notas: qué comí, medicación, ejercicio, cómo me sentí"></textarea><button class="btn" onclick="sg()">Guardar registro</button></div>
+<div class="card"><b>Últimos 7 días:</b> ${w.length} registros · promedio <b>${av}</b> mg/dL</div>
+<div class="no"><button class="btn" onclick="sh()">📤 Compartir con mi médico</button><button class="btn o" onclick="print()">🖨️ Imprimir / guardar PDF</button></div>
+${g.slice(0,40).map((x,i)=>`<div class="card"><b>${x.v}</b> mg/dL ${x.v<70?'<span class="b red">Bajo: seguí las indicaciones de tu médico</span>':""}<br><small>${x.d.slice(8,10)}/${x.d.slice(5,7)} ${x.d.slice(11,16)} · ${x.m}</small>${x.n?`<br>${x.n}`:""}<button class="no" style="float:right;border:0;background:0;font-size:1.2rem" onclick="dg(${i})">🗑</button></div>`).join("")}`},
+tips(){return `<h2>Cuidados y consejos</h2>${TIPS.map(t=>`<details><summary>${t[0]}</summary><p>${t[1]}</p></details>`).join("")}<p class="s">Información general y orientativa. Ante cualquier duda, consultá a tu médico.</p>`},
+net(){return `<h2>¿No encontrás algo?</h2><div class="card"><p>Buscá en internet lo que esta app no tenga: recetas, alimentos, síntomas, dudas.</p><input id="sq" placeholder="Ej: ¿puedo comer banana?" onkeydown="if(event.key=='Enter')se()"><button class="btn" onclick="se()">🔎 Buscar en internet</button><button class="chip" onclick="se('recetas para diabéticos')">Recetas</button><button class="chip" onclick="se('alimentos con bajo índice glucémico')">Índice glucémico</button><button class="chip" onclick="se('colaciones para diabéticos')">Colaciones</button></div><p class="s">Se abre en tu navegador. Verificá siempre con tu médico.</p>`}};
+function sg(){const v=+$("#gv").value;if(!v||v<20||v>800)return alert("Ingresá un valor válido en mg/dL");const g=J("glu",[]);g.unshift({v,m:$("#gm").value,n:$("#gn").value.trim(),d:today()});L.glu=JSON.stringify(g);go("dia")}
+function dg(i){if(!confirm("¿Borrar este registro?"))return;const g=J("glu",[]);g.splice(i,1);L.glu=JSON.stringify(g);go("dia")}
+function sh(){const g=J("glu",[]);const t="Diario de glucemia\n"+g.slice(0,30).map(x=>`${x.d.slice(8,10)}/${x.d.slice(5,7)} ${x.d.slice(11,16)} - ${x.v} mg/dL (${x.m})${x.n?" - "+x.n:""}`).join("\n");navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>alert("Copiado. Pegalo en un mensaje para tu médico."))}
+function se(t){const s=t||$("#sq").value;if(s)open("https://www.google.com/search?q="+encodeURIComponent(s+" diabetes"),"_blank")}
+if(L.ok==1)start();
+</script></body></html>
