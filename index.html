@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Equilibrio</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#B8923A"><link rel="apple-touch-icon" href="icon-192.png">
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diabetes sin Miedo</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#B8923A"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#FBF7EE;--c:#fff;--tx:#2b2418;--g:#B8923A;--g2:#8a6a1f;--ln:#e8dcc0}
 [data-t=dark]{--bg:#15130f;--c:#201d16;--tx:#f1e9d6;--g:#b8923a;--g2:#e7c874;--ln:#3a3426}
@@ -22,11 +22,11 @@ small,.s{opacity:.75;font-size:.85rem}#login{max-width:420px;margin:auto;padding
 @media print{header,nav,.no{display:none!important}}
 </style></head><body>
 <div id="login"><img src="icon-192.png" width="96" alt="" style="border-radius:22px">
-<h1>Equilibrio</h1><p>¡Qué bueno que estés acá! Vivir bien con diabetes también se disfruta en la mesa.</p>
+<h1>Diabetes sin Miedo</h1><p>¡Qué bueno que estés acá! Vivir bien con diabetes también se disfruta en la mesa.</p>
 <button class="btn" id="inst">📲 Instalar la app en mi celular</button><p class="s" id="hint"></p>
 <hr style="border:0;border-top:1px solid var(--ln);margin:1.2rem 0"><p><b>Ingresá tu código de acceso</b></p>
 <input id="code" placeholder="Ej: DEMO-2026" autocapitalize="characters"><button class="btn" onclick="enter()">Entrar</button><p id="err" style="color:#c0392b"></p></div>
-<div id="app" hidden><header><h1>Equilibrio</h1><button onclick="fs(-1)" aria-label="Letra más chica">A−</button><button onclick="fs(1)" aria-label="Letra más grande">A+</button><button onclick="theme()" aria-label="Día o noche" id="th">🌙</button></header><main id="v"></main>
+<div id="app" hidden><header><h1>Diabetes sin Miedo</h1><button onclick="fs(-1)" aria-label="Letra más chica">A−</button><button onclick="fs(1)" aria-label="Letra más grande">A+</button><button onclick="theme()" aria-label="Día o noche" id="th">🌙</button></header><main id="v"></main>
 <nav><button data-t="home"><span>🏠</span>Inicio</button><button data-t="rec"><span>🥗</span>Recetas</button><button data-t="dia"><span>📒</span>Diario</button><button data-t="tips"><span>💡</span>Cuidados</button><button data-t="net"><span>🔎</span>Buscar</button></nav></div>
 <script>
 const $=s=>document.querySelector(s),L=localStorage,J=(k,d)=>{try{return JSON.parse(L[k])||d}catch(e){return d}};
