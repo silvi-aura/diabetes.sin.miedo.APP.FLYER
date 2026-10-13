@@ -27,7 +27,7 @@ small,.s{opacity:.75;font-size:.85rem}#login{max-width:420px;margin:auto;padding
 <hr style="border:0;border-top:1px solid var(--ln);margin:1.2rem 0"><p><b>Ingresá tu código de acceso</b></p>
 <input id="code" placeholder="Ej: DEMO-2026" autocapitalize="characters"><button class="btn" onclick="enter()">Entrar</button><p id="err" style="color:#c0392b"></p></div>
 <div id="app" hidden><header><h1>Diabetes sin Miedo</h1><button onclick="fs(-1)" aria-label="Letra más chica">A−</button><button onclick="fs(1)" aria-label="Letra más grande">A+</button><button onclick="theme()" aria-label="Día o noche" id="th">🌙</button></header><main id="v"></main>
-<nav><button data-t="home"><span>🏠</span>Inicio</button><button data-t="rec"><span>🥗</span>Recetas</button><button data-t="ali"><span>🗓️</span>Menú</button><button data-t="dia"><span>📒</span>Diario</button><button data-t="tips"><span>💡</span>Cuidados</button><button data-t="net"><span>🔎</span>Buscar</button></nav></div>
+<nav><button data-t="home"><span>🏠</span>Inicio</button><button data-t="rec"><span>🥗</span>Recetas</button><button data-t="ali"><span>🗓️</span>Menú</button><button data-t="dia"><span>📒</span>Diario</button><button data-t="tips"><span>💡</span>Cuidados</button><button data-t="salud" aria-label="Próstata, diabetes y salud femenina" title="Salud íntima"><span>🩺</span>Salud</button><button data-t="net"><span>🔎</span>Buscar</button></nav></div>
 <script>
 const $=s=>document.querySelector(s),L=localStorage,J=(k,d)=>{try{return JSON.parse(L[k])||d}catch(e){return d}};
 const RRH = (function () {
@@ -138,7 +138,20 @@ const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOStr
 let dp;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e});
 $("#inst").onclick=async()=>{if(dp){dp.prompt();dp=null}else $("#hint").innerHTML=/iphone|ipad/i.test(navigator.userAgent)?"En iPhone: tocá <b>Compartir</b> y luego <b>Agregar a pantalla de inicio</b>.":"Tocá los <b>tres puntitos ⋮</b> del navegador y elegí <b>Instalar app</b>."};
 if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)$("#inst").hidden=true;
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+if("serviceWorker" in navigator){
+  const hadController=!!navigator.serviceWorker.controller;
+  let refreshing=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    // Si ya había una versión controlando la app, recargá una sola vez al activarse la nueva.
+    if(hadController&&!refreshing){refreshing=true;location.reload();}
+  });
+  navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(reg=>{
+    reg.update().catch(()=>{});
+    document.addEventListener("visibilitychange",()=>{
+      if(!document.hidden)reg.update().catch(()=>{});
+    });
+  }).catch(()=>{});
+}
 async function enter(){const v=$("#code").value,e=$("#err");if(RRH.norm(v).length<6){e.textContent="Escribí tu código completo.";return}
 e.style.color="inherit";e.textContent="Verificando…";await new Promise(r=>setTimeout(r,30));
 try{const h=RRH.huella(v,SALT,ROUNDS),s=await chk(h,true);e.style.color="#c0392b";
@@ -238,6 +251,61 @@ function dg(i){if(!confirm("¿Borrar este registro?"))return;const g=J("glu",[])
 function sh(){const g=J("glu",[]);const t="Diario de glucemia\n"+g.slice(0,30).map(x=>`${x.d.slice(8,10)}/${x.d.slice(5,7)} ${x.d.slice(11,16)} - ${x.v} mg/dL (${x.m})${x.n?" - "+x.n:""}`).join("\n");navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>alert("Copiado. Pegalo en un mensaje para tu médico."))}
 function se(t){const s=t||$("#sq").value;if(s)open("https://www.google.com/search?q="+encodeURIComponent(s+" diabetes"),"_blank")}
 V.sem=()=>`<h2>Semáforo de alimentos</h2>`+[["#4f8a4b","🟢 Comé con libertad","Verduras de hoja y de todos los colores, brócoli, zapallito, pepino, tomate, berenjena, huevo, pescado, pollo, tofu y semillas."],["#c98a1b","🟡 En porciones medidas","Legumbres, avena, arroz integral, pan integral, frutas enteras, papa y batata, lácteos y frutos secos."],["#c0392b","🔴 Mejor limitarlos","Gaseosas y jugos azucarados, golosinas, facturas, alfajores, galletitas dulces, harinas blancas y dulces en general."]].map(g=>`<div class="card"><h3 style="color:${g[0]}">${g[1]}</h3><p>${g[2]}</p></div>`).join("")+`<p class="s">Es una guía general. Tu equipo de salud ajusta las porciones a tu caso.</p>`;
-async function boot(){if(L.ok!=1)return;if(Date.now()-(+L.last||Date.now())>7*864e5){try{if(await chk(L.h,false)!="ok"){L.ok=0;location.reload();return}L.last=Date.now()}catch(x){$("#err").textContent="Conectate a internet para renovar tu acceso (pasó más de una semana).";return}}start();recheck()}
+
+  // Nueva sección educativa: próstata, diabetes y salud urinaria/sexual para todos los géneros.
+  V.salud=()=>`<h2>Salud urinaria, próstata y diabetes</h2>
+  <p>Un espacio para informarte sin vergüenza ni culpa. Estos temas son frecuentes y muchos tienen tratamiento. La información orienta, pero no reemplaza una consulta ni permite hacer un diagnóstico por cuenta propia.</p>
+  <div class="card"><h3>🚨 Señales para actuar ahora</h3><ul>
+  <li><b>No podés orinar nada:</b> acudí a una guardia de inmediato.</li>
+  <li><b>Sangre visible en la orina</b> o fiebre/escalofríos junto con dolor al orinar: necesitás atención médica urgente.</li>
+  <li><b>Diabetes con vómitos, respiración rápida, confusión, somnolencia marcada o deshidratación:</b> buscá atención urgente.</li>
+  <li><b>Dolor de pecho, falta de aire intensa o debilidad repentina:</b> llamá al servicio de emergencias.</li>
+  </ul></div>
+  <details open><summary>👨 Próstata: qué es y qué problemas puede dar</summary>
+  <p>La próstata es una glándula que forma parte del aparato reproductor masculino y está debajo de la vejiga, rodeando parte de la uretra. Con la edad puede aumentar de tamaño. Tener síntomas no significa automáticamente tener cáncer.</p>
+  <h3>Agrandamiento benigno (HBP)</h3><p>Es un crecimiento no canceroso, frecuente con la edad. Puede causar chorro débil o entrecortado, dificultad para empezar, goteo al terminar, sensación de no vaciar la vejiga, necesidad urgente o frecuente de orinar y levantarse varias veces por la noche.</p>
+  <h3>Prostatitis</h3><p>Es una inflamación de la próstata; algunas formas se relacionan con infección. Puede provocar dolor en la pelvis, periné o zona baja de la espalda, molestias al orinar o eyacular, urgencia urinaria y, si hay infección aguda, fiebre y escalofríos. Fiebre con síntomas urinarios requiere atención rápida.</p>
+  <h3>Cáncer de próstata</h3><p>En etapas iniciales puede no dar síntomas. Los problemas para orinar también pueden deberse a causas benignas, por eso no se puede distinguir por síntomas solamente. La edad, antecedentes familiares y otros factores modifican el riesgo. Consultá con un profesional si corresponde conversar sobre el análisis de PSA y sus beneficios, limitaciones y posibles consecuencias; no es una prueba que deba indicarse igual a todas las personas.</p>
+  </details>
+  <details><summary>❓ Dudas frecuentes sobre la próstata</summary>
+  <p><b>¿Orinar de noche significa cáncer?</b> No. Puede relacionarse con HBP, diabetes, medicamentos, problemas de sueño u otras causas. Si es nuevo, persistente o molesto, consultá.</p>
+  <p><b>¿La HBP se convierte en cáncer?</b> No: son condiciones distintas. Pueden coexistir y los síntomas no permiten diferenciarlas sin evaluación.</p>
+  <p><b>¿Puedo prevenir por completo los problemas de próstata?</b> No hay una estrategia garantizada. Mantener actividad física, cuidar la salud metabólica y consultar ante síntomas ayuda a cuidar la salud general, pero no elimina el riesgo.</p>
+  <p><b>¿Debo dejar de tomar agua?</b> No te deshidrates. Si te levantás mucho de noche, consultá si conviene ajustar el horario de líquidos y revisá con tu médico los medicamentos; no los suspendas por tu cuenta.</p>
+  <p><b>¿Qué estudio necesito?</b> Depende de los síntomas, edad, antecedentes y evaluación clínica. El profesional puede indicar examen físico, análisis de orina, PSA u otros estudios según el caso. El PSA no confirma por sí solo un cáncer: también puede subir por una próstata agrandada o inflamada, y conviene conversar sus ventajas y limitaciones.</p>
+  <h3>¿Hay tratamiento?</h3><p>Sí, según la causa. Para el agrandamiento benigno pueden recomendar seguimiento, medicamentos o procedimientos si los síntomas lo justifican. La prostatitis se trata según su tipo; los antibióticos se usan cuando el profesional sospecha o confirma una infección bacteriana. Si se detecta cáncer, el equipo especializado explica las opciones según el tipo, la extensión, el estado general y las preferencias de la persona. No empieces ni suspendas tratamientos por tu cuenta.</p>
+  </details>
+  <details open><summary>🩸 Diabetes y próstata: cómo se relacionan</summary>
+  <p>La diabetes no significa que vayas a tener un problema de próstata, pero la diabetes tipo 2 se asocia con mayor probabilidad de agrandamiento benigno en algunos grupos. Además, la glucosa elevada y el daño de los nervios pueden afectar la vejiga: causar más ganas de orinar, urgencia, pérdidas o dificultad para vaciarla. Estos síntomas se pueden parecer a los de la próstata y pueden coexistir; no conviene asumir la causa.</p>
+  <p>La diabetes también puede afectar la circulación y los nervios implicados en la erección, el deseo y la eyaculación. En algunas personas, una glucemia elevada favorece infecciones genitales (por ejemplo, inflamación o irritación del glande). Algunos cambios sexuales pueden ser una señal para revisar el control de la diabetes, la presión, el colesterol, los medicamentos y otros factores tratables.</p>
+  <h3>Qué podés hacer</h3><ul>
+  <li>Seguí tu plan de glucemia y tomá la medicación tal como fue indicada; no cambies dosis sin consultar.</li>
+  <li>Realizá los controles de diabetes, presión, colesterol y riñón que te indiquen.</li>
+  <li>Hidratate, movete según tus posibilidades y evitá fumar.</li>
+  <li>Anotá cuándo aparecen los síntomas, cuántas veces orinás de día/noche, si hay dolor, pérdidas o cambios sexuales y qué medicamentos tomás.</li>
+  <li>Comentá estos cambios con tu médico clínico, diabetólogo o urólogo. Hay opciones de evaluación y tratamiento.</li></ul>
+  </details>
+  <details><summary>🧍‍♀️ También aplica a las mujeres: vejiga, infecciones y salud sexual</summary>
+  <p>La próstata no se aplica a las mujeres, pero la diabetes puede afectar a personas de cualquier género. Puede aumentar el riesgo de infecciones urinarias y, cuando la glucosa está elevada, de infecciones por hongos. También puede afectar los nervios y la circulación, y contribuir a urgencia urinaria, pérdidas, dificultad para vaciar la vejiga, sequedad vaginal, molestias durante las relaciones o cambios en el deseo y la respuesta sexual.</p>
+  <p>En la menopausia, los cambios hormonales pueden influir en el control de la glucosa en algunas personas y cambiar la lubricación y la salud vaginal/urinaria. No tenés que resignarte ni sentir vergüenza: consultá con medicina clínica, ginecología o el equipo de diabetes. El tratamiento depende de la causa y puede mejorar los síntomas.</p>
+  <p><b>Consultá pronto</b> si tenés ardor al orinar, urgencia o frecuencia nueva, dolor bajo vientre, pérdidas persistentes, picazón o flujo inusual. Fiebre, escalofríos, dolor en la espalda/costado, vómitos o sangre en la orina requieren atención urgente.</p>
+  </details>
+  <details><summary>🛡️ Prevención y cuidado cotidiano</summary>
+  <ul><li>Mantené los controles de glucemia y seguí el tratamiento acordado.</li><li>Tomá agua regularmente, salvo que tu equipo de salud te haya indicado restringir líquidos.</li><li>No aguantes la orina durante muchas horas y no te automediques con antibióticos.</li><li>Si hay síntomas urinarios, evitá tomar medicamentos para resfrío o descongestivos sin consultar: algunos pueden empeorar la dificultad para orinar en personas con HBP.</li><li>La actividad física, una alimentación equilibrada, no fumar y el cuidado de la presión y el colesterol favorecen la salud general, pero no sustituyen la evaluación de síntomas.</li><li>No uses suplementos “para la próstata” ni tratamientos para la erección sin consultar, especialmente si tomás otros medicamentos o nitratos.</li></ul>
+  </details>
+  <details><summary>💬 Vergüenza, pareja y bienestar emocional</summary>
+  <p>Los cambios al orinar o en la vida sexual pueden preocupar, afectar el sueño, la autoestima o la relación de pareja. No son un fracaso personal y no tenés que atravesarlos en silencio. Los profesionales de salud están acostumbrados a conversar sobre estos temas. Podés empezar diciendo: “Noté un cambio al orinar/en mi vida sexual y quisiera saber qué lo está causando”. Si te cuesta hablarlo, anotá las preguntas o pedí que te acompañe alguien de confianza.</p>
+  </details>
+  <details><summary>📋 Prepará tu consulta</summary>
+  <ul><li>¿Cuándo empezó y está empeorando?</li><li>¿Cuántas veces me levanto de noche a orinar?</li><li>¿Tengo chorro débil, dolor, ardor, sangre, fiebre o sensación de no vaciar?</li><li>¿Tuve cambios en erección, deseo, eyaculación, lubricación o dolor sexual?</li><li>¿Cómo estuvieron mis glucemias? ¿Qué medicamentos y suplementos uso?</li><li>¿Qué controles necesito y cuándo debo volver?</li></ul>
+  <p>Podés usar el Diario de la app para registrar la glucemia y llevar tus notas a la consulta.</p></details>
+  <div class="card"><h3>Fuentes médicas para ampliar</h3>
+  <p><a href="https://www.niddk.nih.gov/health-information/informacion-de-la-salud/enfermedades-urologicas/problemas-prostata" target="_blank" rel="noopener">NIDDK: problemas de la próstata</a></p>
+  <p><a href="https://medlineplus.gov/spanish/prostatecancer.html" target="_blank" rel="noopener">MedlinePlus: cáncer de próstata</a></p>
+  <p><a href="https://www.niddk.nih.gov/health-information/informacion-de-la-salud/diabetes/informacion-general/prevenir-problemas/sexuales-urologicos" target="_blank" rel="noopener">NIDDK: diabetes, problemas sexuales y de vejiga</a></p>
+  <p><a href="https://www.cdc.gov/diabetes/es/risk-factors/la-diabetes-y-las-mujeres.html" target="_blank" rel="noopener">CDC: diabetes y salud de las mujeres</a></p>
+  <p class="s">Contenido educativo revisado con fuentes institucionales. No reemplaza diagnóstico, controles ni tratamiento profesional.</p></div>`;
+
+  async function boot(){if(L.ok!=1)return;if(Date.now()-(+L.last||Date.now())>7*864e5){try{if(await chk(L.h,false)!="ok"){L.ok=0;location.reload();return}L.last=Date.now()}catch(x){$("#err").textContent="Conectate a internet para renovar tu acceso (pasó más de una semana).";return}}start();recheck()}
 boot();
 </script></body></html>
