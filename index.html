@@ -27,10 +27,45 @@ small,.s{opacity:.75;font-size:.85rem}#login{max-width:420px;margin:auto;padding
 <hr style="border:0;border-top:1px solid var(--ln);margin:1.2rem 0"><p><b>Ingresá tu código de acceso</b></p>
 <input id="code" placeholder="Ej: DEMO-2026" autocapitalize="characters"><button class="btn" onclick="enter()">Entrar</button><p id="err" style="color:#c0392b"></p></div>
 <div id="app" hidden><header><h1>Diabetes sin Miedo</h1><button onclick="fs(-1)" aria-label="Letra más chica">A−</button><button onclick="fs(1)" aria-label="Letra más grande">A+</button><button onclick="theme()" aria-label="Día o noche" id="th">🌙</button></header><main id="v"></main>
-<nav><button data-t="home"><span>🏠</span>Inicio</button><button data-t="rec"><span>🥗</span>Recetas</button><button data-t="dia"><span>📒</span>Diario</button><button data-t="tips"><span>💡</span>Cuidados</button><button data-t="net"><span>🔎</span>Buscar</button></nav></div>
+<nav><button data-t="home"><span>🏠</span>Inicio</button><button data-t="rec"><span>🥗</span>Recetas</button><button data-t="ali"><span>🗓️</span>Menú</button><button data-t="dia"><span>📒</span>Diario</button><button data-t="tips"><span>💡</span>Cuidados</button><button data-t="net"><span>🔎</span>Buscar</button></nav></div>
 <script>
 const $=s=>document.querySelector(s),L=localStorage,J=(k,d)=>{try{return JSON.parse(L[k])||d}catch(e){return d}};
-const CODES=["DEMO-2026"]; // ← reemplazá por tus códigos (en mayúsculas)
+const RRH = (function () {
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+  function bytesOf(s) { const u = unescape(encodeURIComponent(s)), o = []; for (let i = 0; i < u.length; i++) o.push(u.charCodeAt(i)); return o; }
+  function sha256(bytes) {
+    let h = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const p = bytes.slice(), bl = bytes.length * 8; p.push(0x80); while (p.length % 64 !== 56) p.push(0);
+    for (const v of [Math.floor(bl / 4294967296), bl >>> 0]) p.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255);
+    const w = new Array(64);
+    for (let i = 0; i < p.length; i += 64) {
+      for (let t = 0; t < 16; t++) w[t] = (p[i + 4*t] << 24) | (p[i + 4*t + 1] << 16) | (p[i + 4*t + 2] << 8) | p[i + 4*t + 3];
+      for (let t = 16; t < 64; t++) { const s0 = rotr(w[t-15], 7) ^ rotr(w[t-15], 18) ^ (w[t-15] >>> 3), s1 = rotr(w[t-2], 17) ^ rotr(w[t-2], 19) ^ (w[t-2] >>> 10); w[t] = (w[t-16] + s0 + w[t-7] + s1) | 0; }
+      let [a, b, c, d, e, f, g, hh] = h;
+      for (let t = 0; t < 64; t++) { const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25), ch = (e & f) ^ (~e & g), t1 = (hh + S1 + ch + K[t] + w[t]) | 0, S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22), mj = (a & b) ^ (a & c) ^ (b & c), t2 = (S0 + mj) | 0; hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0; }
+      h = [(h[0]+a)|0,(h[1]+b)|0,(h[2]+c)|0,(h[3]+d)|0,(h[4]+e)|0,(h[5]+f)|0,(h[6]+g)|0,(h[7]+hh)|0];
+    }
+    const o = []; for (const v of h) o.push((v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255); return o;
+  }
+  const hex = b => b.map(x => x.toString(16).padStart(2, '0')).join('');
+  const norm = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  function huella(code, salt, rounds) {
+    const n = norm(code); if (!n) return '';
+    let cur = sha256(bytesOf(salt + ':' + n));
+    for (let i = 0; i < rounds; i++) cur = sha256(cur.concat(bytesOf(n + salt)));
+    return hex(cur);
+  }
+  return { sha256, bytesOf, hex, norm, huella };
+})();
+
+const FK='AIzaSyA7TNfMdbxo4DLrbBpVcJE3X00KntT0Zrk',PID='diabetes-sin-miedo',SALT='equilibrio-diabetes-2026',ROUNDS=20000,DOC=`https://firestore.googleapis.com/v1/projects/${PID}/databases/(default)/documents/codigos/`;
+const did=()=>L.did||(L.did=Array.from(crypto.getRandomValues(new Uint8Array(12))).map(x=>x.toString(16).padStart(2,'0')).join(''));
+async function chk(h,reg){const r=await fetch(DOC+h+'?key='+FK);if(r.status==404)return'no';if(!r.ok)throw new Error('net');const f=(await r.json()).fields||{};
+const act=f.active&&f.active.booleanValue===true,mx=+((f.max&&f.max.integerValue)||1),dv=((f.devices&&f.devices.arrayValue&&f.devices.arrayValue.values)||[]).map(x=>x.stringValue);
+if(!act)return'baja';if(dv.includes(did()))return'ok';if(!reg)return'no';if(dv.length>=mx)return'lleno';
+const w=await fetch(DOC+h+'?updateMask.fieldPaths=devices&key='+FK,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:{devices:{arrayValue:{values:dv.concat(did()).map(x=>({stringValue:x}))}}}})});
+return w.ok?'ok':'net'}
 const R=[
 {n:"Tortilla de espinaca y queso",c:"Desayuno",t:10,h:3,i:["2 huevos","1 puñado de espinaca","2 cdas de ricota","1 cdita de aceite de oliva","Sal y pimienta"],p:"Salteá la espinaca 1 minuto. Batí los huevos con la ricota, sumalos y cociná tapado a fuego bajo 4 minutos de cada lado.",s:"Acompañá con té o café sin azúcar."},
 {n:"Avena con chía y manzana",c:"Desayuno",t:10,h:28,i:["3 cdas de avena","1 cda de chía","½ manzana en cubitos","Canela","¾ taza de leche o agua"],p:"Cociná la avena con la leche 5 minutos. Sumá chía, manzana y canela. Dejá reposar 2 minutos.",s:"Con yogur natural sin azúcar queda más saciante."},
@@ -43,26 +78,86 @@ const R=[
 {n:"Yogur con nueces y canela",c:"Snack",t:3,h:8,i:["1 pote de yogur natural sin azúcar","4 nueces","Canela"],p:"Mezclá todo y comé enseguida.",s:"Un snack con proteínas y grasas buenas ayuda a no llegar con tanta hambre a la comida."},
 {n:"Mousse de palta y cacao",c:"Postre",t:10,h:8,i:["½ palta madura","1 cda de cacao amargo","Edulcorante a gusto","Chorrito de leche"],p:"Procesá todo hasta que quede cremoso. Enfriá 30 minutos.",s:"Probá primero y sumá edulcorante de a poco."}];
 const TIPS=[["🍬 Si te baja el azúcar (hipoglucemia)","Señales: temblor, sudor frío, hambre repentina, mareo o confusión. Si podés medirte y estás por debajo de 70 mg/dL, tomá unos 15 g de hidratos de acción rápida (medio vaso de jugo o 1 cda de azúcar o miel), esperá 15 minutos y volvé a medir. Si no mejora o hay confusión fuerte, pedí ayuda médica urgente."],["🦶 Cuidado de los pies","Revisalos todos los días (también la planta), secá bien entre los dedos, hidratalos sin crema entre ellos, usá calzado cómodo y no camines descalza/o. Consultá ante cualquier herida, ampolla o enrojecimiento."],["🍽️ El plato equilibrado","Medio plato de verduras, un cuarto de proteínas y un cuarto de hidratos integrales. Tomá agua y mirá en las etiquetas los hidratos totales: «sin azúcar agregada» no es lo mismo que «sin hidratos»."],["🚶 Movimiento","Caminar unos 30 minutos la mayoría de los días ayuda mucho, sobre todo después de comer. Antes de empezar una rutina nueva consultá a tu médico, y si usás medicación que puede bajar el azúcar, llevá siempre algo para corregirlo."],["📋 Controles que no hay que olvidar","Hemoglobina glicosilada (HbA1c) según te indique tu médico, control de ojos una vez al año, riñón, presión, colesterol, pies y salud bucal."],["🤒 Días de enfermedad","Hidratate bien, medí el azúcar con más frecuencia y no suspendas la medicación sin consultar. Pedí indicaciones a tu equipo de salud."],["🚨 Cuándo consultar urgente","Sed intensa con valores muy altos que no bajan, vómitos, dolor abdominal, respiración rápida, somnolencia o confusión, y cualquier bajón que no se corrige."]];
+
+const X=`Panqueques de avena y banana|Desayuno|15|30|½ banana;3 cdas de avena;1 huevo;Canela|Procesá todo y cociná en sartén antiadherente 2 minutos de cada lado.|Sumá frutillas arriba en lugar de miel.
+Yogur con frutillas y semillas|Desayuno|5|14|1 pote de yogur natural sin azúcar;5 frutillas;1 cda de chía o lino|Mezclá y comé enseguida.|Elegí yogur sin azúcar agregada.
+Huevos revueltos con tomate|Desayuno|10|5|2 huevos;1 tomate;Albahaca;1 cdita de aceite de oliva|Salteá el tomate 2 minutos, sumá los huevos batidos y revolvé.|Con una tostada integral chica queda completo.
+Budín de avena sin azúcar|Desayuno|35|18|1 taza de avena;2 huevos;1 banana pisada;Canela;1 cdita de polvo de hornear|Mezclá todo y horneá a 180 °C unos 25 minutos. Rinde 4 porciones.|Dura 3 días en la heladera.
+Licuado verde|Desayuno|5|15|1 taza de leche descremada;1 puñado de espinaca;½ pera;1 cda de chía|Licuá todo hasta que quede parejo.|Tomalo sin colar para conservar la fibra.
+Tostada con ricota y tomate|Desayuno|5|14|1 rebanada de pan integral;3 cdas de ricota;Rodajas de tomate;Orégano|Untá la ricota, sumá el tomate y condimentá.|Probala también con pepino.
+Ensalada de pollo y palta|Almuerzo|15|8|1 pechuga cocida desmenuzada;¼ palta;Lechuga;Tomates cherry;Limón y aceite de oliva|Mezclá todo y condimentá al servir.|Sumá semillas de girasol para dar crocante.
+Tarta de verduras sin masa|Almuerzo|40|9|2 huevos;1 taza de acelga o espinaca cocida;¼ cebolla;3 cdas de queso rallado|Mezclá todo y horneá a 180 °C unos 25 minutos.|Rinde para 2 porciones.
+Guiso de lentejas con verduras|Almuerzo|45|32|1 taza de lentejas cocidas;1 zanahoria;½ cebolla;1 tomate;Pimentón|Rehogá las verduras, sumá las lentejas y el tomate y cociná 15 minutos.|Las legumbres dan fibra y ayudan a sentirte satisfecha/o.
+Milanesa de pollo al horno|Almuerzo|35|10|1 pechuga fileteada;1 huevo;2 cdas de avena molida o salvado;Ajo y perejil|Pasá por huevo y avena y horneá 20 minutos, dando vuelta a la mitad.|Acompañala con ensalada de repollo.
+Pastel de berenjena|Almuerzo|50|12|1 berenjena en rodajas;120 g de carne picada magra;Salsa de tomate natural;Queso rallado|Dorá las rodajas, armá capas con la carne y la salsa y gratiná 15 minutos.|Podés reemplazar la carne por lentejas.
+Wok de pollo y verduras|Almuerzo|20|10|1 pechuga en tiras;1 morrón;½ zanahoria;Brócoli;Salsa de soja y jengibre|Salteá el pollo y sumá las verduras 5 minutos.|Usá poca salsa de soja por la sal.
+Hamburguesa casera con ensalada|Almuerzo|25|6|120 g de carne picada magra;Ajo y perejil;Lechuga y tomate|Formá la hamburguesa y cociná 4 minutos por lado en plancha.|Sin pan, o con un pan integral chico.
+Atún con ensalada de garbanzos|Almuerzo|10|22|1 lata de atún al natural;½ taza de garbanzos cocidos;Tomate;Cebolla;Limón|Escurrí el atún y mezclá todo.|Rápida para llevar al trabajo.
+Tortilla de calabacín|Cena|20|5|2 huevos;1 calabacín rallado;3 cdas de queso rallado;Sal|Mezclá y cociná tapada 5 minutos de cada lado.|Exprimí el calabacín para que no suelte agua.
+Pollo al limón con zapallitos|Cena|30|6|1 pechuga;1 limón;2 zapallitos;1 diente de ajo|Marcá el pollo, sumá los zapallitos y el jugo y cociná tapado 15 minutos.|Cena liviana y con proteínas.
+Omelette de champiñones|Cena|12|4|2 huevos;5 champiñones;Perejil|Salteá los champiñones y cubrilos con el huevo batido.|Sumá una ensalada verde.
+Salmón al horno con ensalada|Cena|25|3|1 filet de salmón;Limón;Eneldo;Hojas verdes|Horneá el salmón 15 minutos a 200 °C y servilo con las hojas.|Los pescados grasos aportan omega 3.
+Crema de zapallito|Cena|25|10|3 zapallitos;½ cebolla;1 diente de ajo;1 taza de caldo|Cociná todo 15 minutos y procesá.|Sin papa, para que lleve menos hidratos.
+Berenjenas rellenas|Cena|45|12|1 berenjena;100 g de carne o atún;1 tomate;Queso|Ahuecá, rellená con la mezcla rehogada y horneá 25 minutos.|Una opción para compartir en familia.
+Ensalada tibia de brócoli y huevo|Cena|15|5|1 taza de brócoli;1 huevo duro;Limón;Aceite de oliva|Hervilo el brócoli 4 minutos y mezclalo con el huevo picado.|No lo hiervas de más para que conserve el color.
+Revuelto de zapallitos y queso|Cena|15|7|2 zapallitos;1 huevo;Queso fresco|Salteá los zapallitos y sumá el huevo y el queso.|Ideal para cuando no hay tiempo.
+Palitos de zanahoria con hummus|Snack|10|12|1 zanahoria;3 cdas de hummus|Cortá en bastones y acompañá con el hummus.|Podés prepararlo para toda la semana.
+Frutos secos medidos|Snack|1|6|10 almendras o 4 nueces|Medí la porción y comela con calma.|Son muy energéticos: una porción alcanza.
+Huevo duro con pepino|Snack|10|3|1 huevo duro;½ pepino;Sal|Cociná el huevo 10 minutos y servilo con el pepino.|Muy saciante.
+Queso con manzana|Snack|2|16|1 feta de queso fresco;½ manzana|Cortá la manzana y comela con el queso.|La proteína ayuda a que no suba tanto el azúcar.
+Gelatina sin azúcar con frutillas|Snack|5|5|1 gelatina sin azúcar;4 frutillas|Prepará la gelatina y sumá las frutillas cortadas.|Para esos momentos de antojo dulce.
+Manzana al horno con canela|Postre|25|20|1 manzana;Canela;1 cda de nueces picadas|Horneá la manzana 20 minutos a 180 °C y espolvoreá con las nueces.|Dulce natural, sin azúcar agregada.
+Flan de huevo sin azúcar|Postre|40|9|2 huevos;1 taza de leche;Esencia de vainilla;Edulcorante|Mezclá, volcá en moldes y cociná a baño María 30 minutos.|Probalo frío.
+Frutillas con yogur y cacao|Postre|5|12|6 frutillas;1 pote de yogur natural;1 cdita de cacao amargo|Serví el yogur con las frutillas y espolvoreá el cacao.|Postre rápido de último momento.`.split("\n").map(l=>{const a=l.split("|");return{n:a[0],c:a[1],t:+a[2],h:+a[3],i:a[4].split(";"),p:a[5],s:a[6]}});R.push(...X);
+TIPS.push(...`📏 Cuándo medirte la glucemia|Tu médico te indica cuántas veces por día y en qué momentos. Anotá cada valor en el Diario, con la comida y la actividad, para que tu consulta sea más útil.
+⬆️ Si te sube el azúcar (hiperglucemia)|Puede dar mucha sed, ganas de orinar seguido, cansancio y visión borrosa. Tomá agua, seguí las indicaciones de tu médico y consultá si los valores altos se repiten.
+📈 Índice glucémico en simple|Los alimentos integrales, las legumbres y las verduras suben menos el azúcar que las harinas blancas y los dulces. Combiná los hidratos con proteínas y fibra.
+😴 Dormir bien|Dormir poco puede hacer que el azúcar sea más difícil de controlar. Buscá una rutina regular de sueño.
+🧘 Estrés y glucemia|El estrés puede subir el azúcar. Probá respirar profundo, caminar o hacer una pausa de 5 minutos cuando lo sientas.
+🍽️ Comer afuera|Pedí verduras como acompañamiento, elegí agua en lugar de gaseosas y compartí los postres. Si podés, mirá el menú antes de ir.
+✈️ Viajes y salidas|Llevá tu medicación, tu medidor y colaciones. Respetá los horarios de las comidas y tené un comprobante de tu tratamiento.
+🦷 Piel y boca|Hidratá la piel, revisá heridas y cepillate los dientes con cuidado. Hacé una visita al dentista por año.
+💧 Hidratación|El agua es la mejor bebida. Tomá a lo largo del día aunque no tengas sed.`.split("\n").map(l=>l.split("|")));
+const G=`HbA1c (hemoglobina glicosilada)|Un análisis que muestra el promedio de tu azúcar en los últimos 2 a 3 meses. Tu médico te dice cada cuánto pedirlo.
+Glucemia|La cantidad de azúcar (glucosa) en la sangre. Se mide en mg/dL.
+Hipoglucemia|Azúcar baja en sangre. Puede dar temblor, sudor frío y mareo. Se corrige con hidratos rápidos, según las indicaciones de tu médico.
+Hiperglucemia|Azúcar alta en sangre. Puede dar mucha sed y cansancio.
+Índice glucémico|Mide qué tan rápido un alimento sube el azúcar en sangre.
+Hidratos de carbono|Nutriente que se transforma en glucosa. Está en panes, arroz, fideos, frutas, legumbres y dulces.
+Insulina|Hormona que permite que el azúcar entre a las células.
+Glucemia en ayunas|El valor medido después de al menos 8 horas sin comer.`.split("\n").map(l=>l.split("|")),Q=`¿Cuál es mi rango objetivo de glucemia?
+¿Cada cuánto tengo que medirme y en qué momentos?
+¿Cada cuánto me pido la HbA1c?
+¿Cómo ajusto la medicación si cambio mi rutina?
+¿Qué hago si tengo una hipoglucemia?
+¿Qué controles de ojos, riñón y pies me corresponden?
+¿Qué actividad física es adecuada para mí?
+¿Puedo consultar con un nutricionista?`.split("\n");
 let tab="home",cat="Todas",q="";
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString();
 let dp;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dp=e});
 $("#inst").onclick=async()=>{if(dp){dp.prompt();dp=null}else $("#hint").innerHTML=/iphone|ipad/i.test(navigator.userAgent)?"En iPhone: tocá <b>Compartir</b> y luego <b>Agregar a pantalla de inicio</b>.":"Tocá los <b>tres puntitos ⋮</b> del navegador y elegí <b>Instalar app</b>."};
 if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)$("#inst").hidden=true;
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
-function enter(){const v=$("#code").value.trim().toUpperCase();if(CODES.includes(v)){L.ok=1;start()}else $("#err").textContent="Ese código no es válido. Revisalo y probá de nuevo."}
+async function enter(){const v=$("#code").value,e=$("#err");if(RRH.norm(v).length<6){e.textContent="Escribí tu código completo.";return}
+e.style.color="inherit";e.textContent="Verificando…";await new Promise(r=>setTimeout(r,30));
+try{const h=RRH.huella(v,SALT,ROUNDS),s=await chk(h,true);e.style.color="#c0392b";
+if(s=="ok"){L.ok=1;L.h=h;L.last=Date.now();start()}else e.textContent={no:"Ese código no es válido. Revisalo y probá de nuevo.",baja:"Ese código ya no está activo. Escribinos y lo resolvemos.",lleno:"Ese código ya se usó en el máximo de celulares. Escribinos si cambiaste de teléfono.",net:"No pudimos verificar. Revisá tu conexión e intentá de nuevo."}[s]}
+catch(x){e.style.color="#c0392b";e.textContent="No pudimos verificar. Revisá tu conexión e intentá de nuevo."}}
+async function recheck(){try{const s=await chk(L.h,false);if(s=="ok")L.last=Date.now();if(s=="no"||s=="baja"){L.ok=0;location.reload()}}catch(x){}}
 function start(){$("#login").hidden=true;$("#app").hidden=false;fs(0);apply();go("home")}
 function apply(){document.body.dataset.t=L.th||"l";$("#th").textContent=L.th=="dark"?"☀️":"🌙"}
 function theme(){L.th=L.th=="dark"?"l":"dark";apply()}
 function fs(d){const s=Math.min(26,Math.max(15,(+L.fs||18)+d*2));L.fs=s;document.documentElement.style.fontSize=s+"px"}
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.t));
 function go(t){tab=t;document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));$("#v").innerHTML=V[t]();scrollTo(0,0)}
-const day=()=>today().slice(0,10),H=["Tomé agua","Caminé","Revisé mis pies","Tomé mi medicación","Comí verduras"];
+const day=()=>today().slice(0,10),H=["Tomé agua","Caminé","Revisé mis pies","Tomé mi medicación","Comí verduras","Medí mi glucemia","Dormí bien","Comí sin apuro"];
 function hab(i){const h=J("hab",{});h[day()]=h[day()]||[];const a=h[day()],k=a.indexOf(i);k<0?a.push(i):a.splice(k,1);L.hab=JSON.stringify(h);go("home")}
 function fav(i){const f=J("fav",[]);const k=f.indexOf(i);k<0?f.push(i):f.splice(k,1);L.fav=JSON.stringify(f);go("rec")}
 function rc(r,i){const f=J("fav",[]).includes(i);return `<details><summary>${r.n}</summary><p><span class="b">${r.c}</span><span class="b">⏱ ${r.t} min</span><span class="b">≈ ${r.h} g hidratos</span></p><b>Ingredientes (1 porción)</b><ul>${r.i.map(x=>`<li>${x}</li>`).join("")}</ul><b>Preparación</b><p>${r.p}</p><p>💡 ${r.s}</p><button class="chip ${f?"on":""}" onclick="fav(${i})">${f?"♥ En favoritas":"♡ Guardar"}</button></details>`}
 const V={
 home(){const h=J("hab",{})[day()]||[],g=J("glu",[]),u=g[0],r=R.indexOf(R[new Date().getDate()%R.length]);
-return `<h2>¡Hola! Qué bueno verte 🌿</h2><div class="card"><h3>Receta del día</h3>${rc(R[r],r)}</div>
+return `<h2>¡Hola! Qué bueno verte 🌿</h2>${rf()}<button class="btn o" onclick="irPlan()">🚶 Mi plan de movimiento</button><div class="card"><h3>Receta del día</h3>${rc(R[r],r)}</div>
 <div class="card"><h3>Tu plato ideal</h3><div class="bar" style="background:#4f8a4b;width:100%">½ verduras</div><div class="bar" style="background:#b8623a;width:50%">¼ proteínas</div><div class="bar" style="background:var(--g);width:50%">¼ hidratos integrales</div></div>
 <div class="card"><h3>Hábitos de hoy (${h.length}/${H.length})</h3>${H.map((x,i)=>`<label style="display:block;padding:.3rem 0"><input type="checkbox" style="width:auto" ${h.includes(i)?"checked":""} onchange="hab(${i})"> ${x}</label>`).join("")}</div>
 <div class="card"><h3>Último registro</h3>${u?`<b style="font-size:1.6rem">${u.v}</b> mg/dL <small>${u.m} · ${u.d.slice(8,10)}/${u.d.slice(5,7)}</small>`:"Todavía no cargaste ninguno. Probá en el Diario 📒"}</div>
@@ -77,9 +172,72 @@ return `<h2>Diario para mi médico</h2><div class="card no"><input id="gv" type=
 ${g.slice(0,40).map((x,i)=>`<div class="card"><b>${x.v}</b> mg/dL ${x.v<70?'<span class="b red">Bajo: seguí las indicaciones de tu médico</span>':""}<br><small>${x.d.slice(8,10)}/${x.d.slice(5,7)} ${x.d.slice(11,16)} · ${x.m}</small>${x.n?`<br>${x.n}`:""}<button class="no" style="float:right;border:0;background:0;font-size:1.2rem" onclick="dg(${i})">🗑</button></div>`).join("")}`},
 tips(){return `<h2>Cuidados y consejos</h2>${TIPS.map(t=>`<details><summary>${t[0]}</summary><p>${t[1]}</p></details>`).join("")}<p class="s">Información general y orientativa. Ante cualquier duda, consultá a tu médico.</p>`},
 net(){return `<h2>¿No encontrás algo?</h2><div class="card"><p>Buscá en internet lo que esta app no tenga: recetas, alimentos, síntomas, dudas.</p><input id="sq" placeholder="Ej: ¿puedo comer banana?" onkeydown="if(event.key=='Enter')se()"><button class="btn" onclick="se()">🔎 Buscar en internet</button><button class="chip" onclick="se('recetas para diabéticos')">Recetas</button><button class="chip" onclick="se('alimentos con bajo índice glucémico')">Índice glucémico</button><button class="chip" onclick="se('colaciones para diabéticos')">Colaciones</button></div><p class="s">Se abre en tu navegador. Verificá siempre con tu médico.</p>`}};
+
+let md=(new Date().getDay()+6)%7;
+const DN=["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],MT=["Desayuno","Almuerzo","Cena","Colación o postre"],MN=[[0,3,6,8],[1,4,24,35],[12,16,28,32],[10,19,27,34],[2,18,25,36],[14,22,30,37],[15,17,29,39]];
+const nm=x=>{const n=x.replace(/^[\d½¼¾.,\/\s]+(?:(?:g|cdas?|cditas?|tazas?|potes?|latas?|fetas?|rebanadas?|puñados?|dientes?|filet)\b\s*(?:de\s+)?)?/i,"").trim();return n.charAt(0).toUpperCase()+n.slice(1)};
+const sl=()=>[...new Set(MN.flat().flatMap(i=>R[i].i.map(nm)))].sort((a,b)=>a.localeCompare(b,"es"));
+function sd(i){md=i;go("ali")}
+function ck(i){const c=J("cmp",[]),k=c.indexOf(i);k<0?c.push(i):c.splice(k,1);L.cmp=JSON.stringify(c);go("ali")}
+function shl(){const t="Lista de compras de la semana\n"+sl().map(x=>"- "+x).join("\n");navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>alert("Lista copiada. Pegala donde quieras."))}
+V.ali=()=>{const d=MN[md],c=J("cmp",[]),tot=d.reduce((a,i)=>a+R[i].h,0);
+return `<h2>Mi menú semanal</h2>`+DN.map((x,i)=>`<button class="chip ${md==i?"on":""}" onclick="sd(${i})">${x}</button>`).join("")+`<p>Total aproximado del día: <b>${tot} g de hidratos</b></p>`+d.map((i,k)=>`<small>${MT[k]}</small>${rc(R[i],i)}`).join("")+`<h2>Lista de compras</h2><div class="card"><p class="s">Son los ingredientes de toda la semana. Tildá lo que ya tenés y ajustá las cantidades según cuántos coman.</p>${sl().map((x,i)=>`<label style="display:block;padding:.25rem 0"><input type="checkbox" style="width:auto" ${c.includes(i)?"checked":""} onchange="ck(${i})"> ${x}</label>`).join("")}<button class="btn" onclick="shl()">📤 Compartir lista</button><button class="btn o" onclick="L.cmp='[]';go('ali')">Borrar tildes</button></div>`+V.sem()};
+V.tips=(o=>()=>o().replace('<p class="s">Información general',`<h2>Glosario</h2>${G.map(g=>`<details><summary>${g[0]}</summary><p>${g[1]}</p></details>`).join("")}<h2>Preguntas para tu médico</h2><div class="card"><ul>${Q.map(x=>`<li>${x}</li>`).join("")}</ul></div><p class="s">Información general`))(V.tips);
+function rf(){const h=J("hab",{});let d=new Date(),n=0;const k=x=>new Date(x.getTime()-x.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+if((h[k(d)]||[]).length<4)d.setDate(d.getDate()-1);while((h[k(d)]||[]).length>=4&&n<365){n++;d.setDate(d.getDate()-1)}
+const F=["Cada pequeña decisión de hoy suma.","No tiene que ser perfecto: tiene que ser constante.","Cuidarte también es disfrutar.","Un paso por día te lleva lejos.","Hoy es un buen día para elegir lo que te hace bien.","Tu constancia vale más que la perfección.","Comer rico y sano es posible."];
+return `<div class="card"><b>🔥 Racha: ${n} ${n==1?"día":"días"}</b><br><small>Suma cuando cumplís 4 o más hábitos en el día.</small><p style="margin:.5rem 0 0"><i>${F[new Date().getDate()%F.length]}</i></p></div>`}
+
+const FD=`Pan integral (1 rebanada)|15
+Pan blanco (1 rebanada)|15
+Medialuna (1)|25
+Arroz integral cocido (½ taza)|23
+Arroz blanco cocido (½ taza)|22
+Fideos cocidos (½ taza)|20
+Papa hervida mediana (1)|30
+Batata mediana (1)|25
+Choclo (½ taza)|16
+Lentejas cocidas (½ taza)|20
+Garbanzos cocidos (½ taza)|20
+Avena cruda (3 cdas)|13
+Manzana mediana (1)|20
+Banana chica (1)|20
+Naranja mediana (1)|15
+Pera chica (1)|20
+Frutillas (1 taza)|11
+Uvas (15 unidades)|15
+Sandía (1 taza)|12
+Leche (1 taza)|12
+Yogur natural sin azúcar (1 pote)|8
+Yogur saborizado (1 pote)|20
+Galletitas de agua (3)|11
+Galletitas dulces (2)|15
+Alfajor (1)|30
+Gaseosa común (1 vaso)|26
+Jugo de naranja (1 vaso)|26
+Helado (1 bocha)|20
+Chocolate (2 cuadraditos)|7
+Pizza (1 porción)|30
+Empanada (1)|25
+Zanahoria cruda (1)|8
+Tomate (1)|4
+Verduras de hoja (1 plato)|3
+Carne, pescado, huevo o queso (1 porción)|0`.split("\n").map(l=>l.split("|"));
+function ah(){const i=+$("#hs").value,h=J("hid",{}),k=day();h[k]=(h[k]||[]).concat(i);L.hid=JSON.stringify(h);go("dia")}
+function rh(j){const h=J("hid",{}),k=day();h[k].splice(j,1);L.hid=JSON.stringify(h);go("dia")}
+function hc(){const a=J("hid",{})[day()]||[],t=a.reduce((s,i)=>s+ +FD[i][1],0);return `<div class="card no"><h3>🍽️ Hidratos de hoy</h3><select id="hs">${FD.map((f,i)=>`<option value="${i}">${f[0]} · ${f[1]} g</option>`).join("")}</select><button class="btn" onclick="ah()">Sumar a mi día</button>${a.map((i,j)=>`<div style="padding:.2rem 0">${FD[i][0]} <b>${FD[i][1]} g</b> <button style="border:0;background:0;font-size:1rem" onclick="rh(${j})">✖</button></div>`).join("")}<p><b>Total de hoy: ${t} g</b></p><small>Valores aproximados. La cantidad que te corresponde la define tu nutricionista.</small></div>`}
+V.dia=(o=>()=>o().replace('<div class="card"><b>Últimos 7 días:</b>',hc()+'<div class="card"><b>Últimos 7 días:</b>'))(V.dia);
+V.tips=(o=>()=>o().replace('<h2>Glosario</h2>',`<h2>Movimiento y ejercicios</h2><details><summary>Antes de empezar</summary><p>Consultá a tu médico antes de empezar una rutina nueva. Si usás insulina o medicación que puede bajar el azúcar, medite antes y después y llevá una colación. Frená si sentís mareo, dolor de pecho o falta de aire fuerte.</p></details><details><summary>🚶 Caminata progresiva</summary><p>Semana 1: 10 minutos por día. Semana 2: 15. Semana 3: 20. Semana 4: 30. Caminá a un ritmo en el que puedas hablar. Usá calzado cómodo y revisá tus pies al terminar.</p></details><details><summary>🍽️ Caminata después de comer</summary><p>Caminar de 10 a 15 minutos después de las comidas puede ayudar a que el azúcar suba menos. Empezá por la comida principal.</p></details><details><summary>💪 Fuerza suave en casa</summary><p>2 o 3 veces por semana, 2 series de 8 a 10 repeticiones, con 1 minuto de descanso: pararte y sentarte de una silla, flexiones apoyada en la pared, elevar talones, puente de glúteos acostada y remo con botellas de agua.</p></details><details><summary>⚖️ Equilibrio</summary><p>Para prevenir caídas: parate sobre un pie 10 segundos, apoyándote en una silla, 3 veces de cada lado. Caminá también apoyando talón y punta por el pasillo.</p></details><details><summary>🤸 Estiramientos de 5 minutos</summary><p>Cuello, hombros, espalda baja, piernas y pantorrillas. Mantené cada uno entre 20 y 30 segundos, sin rebotar y sin dolor.</p></details><details><summary>🪑 Pausas activas</summary><p>Si pasás mucho tiempo sentada/o, levantate cada 30 a 45 minutos, caminá 2 o 3 minutos y elevá los talones unas veces.</p></details><h2>Glosario</h2>`))(V.tips);
+
+const pk=k=>J("plan",[]).includes(k);
+function pd(k,b){const p=J("plan",[]),i=p.indexOf(k);i<0?p.push(k):p.splice(i,1);L.plan=JSON.stringify(p);b.classList.toggle("on");const e=document.getElementById("pg");if(e)e.textContent=p.length}
+function irPlan(){go("tips");setTimeout(()=>{const e=document.getElementById("plan");e&&e.scrollIntoView()},50)}
+V.tips=(o=>()=>o().replace('<h2>Glosario</h2>',`<h2 id="plan">Plan de movimiento de 4 semanas</h2><p>Para quienes están empezando. Tildá cada día que lo cumplas: llevás <b id="pg">${J("plan",[]).length}</b> de 28 días.</p><details><summary>Semana 1</summary><p>Objetivo: acostumbrar al cuerpo. Caminá de 5 a 10 minutos por día, o hacé 3 tandas de 3 minutos. Sumá 2 minutos de estiramiento suave.</p><button class="chip ${pk("1-1")?"on":""}" onclick="pd('1-1',this)">Día 1</button><button class="chip ${pk("1-2")?"on":""}" onclick="pd('1-2',this)">Día 2</button><button class="chip ${pk("1-3")?"on":""}" onclick="pd('1-3',this)">Día 3</button><button class="chip ${pk("1-4")?"on":""}" onclick="pd('1-4',this)">Día 4</button><button class="chip ${pk("1-5")?"on":""}" onclick="pd('1-5',this)">Día 5</button><button class="chip ${pk("1-6")?"on":""}" onclick="pd('1-6',this)">Día 6</button><button class="chip ${pk("1-7")?"on":""}" onclick="pd('1-7',this)">Día 7</button></details><details><summary>Semana 2</summary><p>Caminá de 10 a 15 minutos por día. Sumá los ejercicios sentada/o dos días en la semana.</p><button class="chip ${pk("2-1")?"on":""}" onclick="pd('2-1',this)">Día 1</button><button class="chip ${pk("2-2")?"on":""}" onclick="pd('2-2',this)">Día 2</button><button class="chip ${pk("2-3")?"on":""}" onclick="pd('2-3',this)">Día 3</button><button class="chip ${pk("2-4")?"on":""}" onclick="pd('2-4',this)">Día 4</button><button class="chip ${pk("2-5")?"on":""}" onclick="pd('2-5',this)">Día 5</button><button class="chip ${pk("2-6")?"on":""}" onclick="pd('2-6',this)">Día 6</button><button class="chip ${pk("2-7")?"on":""}" onclick="pd('2-7',this)">Día 7</button></details><details><summary>Semana 3</summary><p>Caminá de 15 a 20 minutos, 5 días. Sumá fuerza suave 2 días: pararte y sentarte de una silla y flexiones apoyada en la pared.</p><button class="chip ${pk("3-1")?"on":""}" onclick="pd('3-1',this)">Día 1</button><button class="chip ${pk("3-2")?"on":""}" onclick="pd('3-2',this)">Día 2</button><button class="chip ${pk("3-3")?"on":""}" onclick="pd('3-3',this)">Día 3</button><button class="chip ${pk("3-4")?"on":""}" onclick="pd('3-4',this)">Día 4</button><button class="chip ${pk("3-5")?"on":""}" onclick="pd('3-5',this)">Día 5</button><button class="chip ${pk("3-6")?"on":""}" onclick="pd('3-6',this)">Día 6</button><button class="chip ${pk("3-7")?"on":""}" onclick="pd('3-7',this)">Día 7</button></details><details><summary>Semana 4</summary><p>Caminá de 20 a 30 minutos la mayoría de los días y sumá fuerza suave 2 o 3 días. ¡Ya creaste un hábito!</p><button class="chip ${pk("4-1")?"on":""}" onclick="pd('4-1',this)">Día 1</button><button class="chip ${pk("4-2")?"on":""}" onclick="pd('4-2',this)">Día 2</button><button class="chip ${pk("4-3")?"on":""}" onclick="pd('4-3',this)">Día 3</button><button class="chip ${pk("4-4")?"on":""}" onclick="pd('4-4',this)">Día 4</button><button class="chip ${pk("4-5")?"on":""}" onclick="pd('4-5',this)">Día 5</button><button class="chip ${pk("4-6")?"on":""}" onclick="pd('4-6',this)">Día 6</button><button class="chip ${pk("4-7")?"on":""}" onclick="pd('4-7',this)">Día 7</button></details><p class="s">Un día de descanso por semana está bien. Si usás medicación que puede bajar el azúcar, medite antes y llevá una colación.</p><h2>Mi punto de partida</h2><details><summary>🛋️ Soy muy sedentaria/o</summary><p>Empezá desde la silla: los ejercicios sentada/o de esta sección y 3 minutos de caminata después de comer. No busques hacer mucho: buscá hacerlo todos los días. Sumá 1 o 2 minutos cada semana.</p></details><details><summary>⏱️ Tengo poco tiempo</summary><p>Hacé micro movimientos de 5 minutos: subí escaleras, caminá mientras hablás por teléfono, levantate cada 30 minutos. Tres tandas de 5 minutos valen.</p></details><details><summary>👵 Soy mayor de 60</summary><p>Priorizá el equilibrio y la fuerza suave, siempre cerca de una silla o pared. Caminá en terreno parejo y con calzado firme. Consultá a tu médico antes de aumentar el ritmo.</p></details><details><summary>🦵 Me duelen las rodillas o las articulaciones</summary><p>Probá movimientos de bajo impacto: bicicleta fija, ejercicios en el agua o caminata corta en superficie blanda. Evitá saltos. Si el dolor aumenta, frená y consultá.</p></details><details><summary>⚖️ Tengo sobrepeso</summary><p>Caminá en tandas cortas de 10 minutos, 3 veces al día. Elegí calzado amortiguado y sumá fuerza suave 2 días por semana. Los primeros resultados llegan con la constancia.</p></details><details><summary>🏃 Ya me muevo</summary><p>Sumá intensidad de a poco: alterná 2 minutos de caminata rápida con 2 de ritmo suave, 5 veces. Sumá fuerza 2 o 3 días. Medí tu glucemia antes si usás medicación que la baja.</p></details><h2>Ejercicios sentada/o</h2><p>Hacé 2 vueltas, una vez por día o más.</p><details><summary>🪑 Marcha sentada</summary><p>30 segundos, apoyando bien la espalda en el respaldo.</p></details><details><summary>🦵 Elevar rodillas</summary><p>Sentada/o, subí una rodilla y bajala. 10 veces por pierna.</p></details><details><summary>🦿 Estirar piernas</summary><p>Estirá una pierna hacia adelante y mantené 3 segundos. 10 veces por lado.</p></details><details><summary>🦶 Círculos de tobillos</summary><p>10 círculos hacia cada lado, con cada pie.</p></details><details><summary>💪 Brazos con botellas</summary><p>Con una botella de agua en cada mano, subí los brazos hasta los hombros. 10 veces.</p></details><details><summary>🔄 Giro de tronco</summary><p>Con las manos en el pecho, girá suavemente hacia un lado y el otro. 8 veces por lado.</p></details><details><summary>🍑 Apretar glúteos</summary><p>Apretá 3 segundos y soltá. 10 veces.</p></details><details><summary>🌬️ Respiración profunda</summary><p>Inhalá 4 segundos por la nariz y soltá 6 por la boca. 5 veces.</p></details><h2>Glosario</h2>`))(V.tips);
 function sg(){const v=+$("#gv").value;if(!v||v<20||v>800)return alert("Ingresá un valor válido en mg/dL");const g=J("glu",[]);g.unshift({v,m:$("#gm").value,n:$("#gn").value.trim(),d:today()});L.glu=JSON.stringify(g);go("dia")}
 function dg(i){if(!confirm("¿Borrar este registro?"))return;const g=J("glu",[]);g.splice(i,1);L.glu=JSON.stringify(g);go("dia")}
 function sh(){const g=J("glu",[]);const t="Diario de glucemia\n"+g.slice(0,30).map(x=>`${x.d.slice(8,10)}/${x.d.slice(5,7)} ${x.d.slice(11,16)} - ${x.v} mg/dL (${x.m})${x.n?" - "+x.n:""}`).join("\n");navigator.share?navigator.share({text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>alert("Copiado. Pegalo en un mensaje para tu médico."))}
 function se(t){const s=t||$("#sq").value;if(s)open("https://www.google.com/search?q="+encodeURIComponent(s+" diabetes"),"_blank")}
-if(L.ok==1)start();
+V.sem=()=>`<h2>Semáforo de alimentos</h2>`+[["#4f8a4b","🟢 Comé con libertad","Verduras de hoja y de todos los colores, brócoli, zapallito, pepino, tomate, berenjena, huevo, pescado, pollo, tofu y semillas."],["#c98a1b","🟡 En porciones medidas","Legumbres, avena, arroz integral, pan integral, frutas enteras, papa y batata, lácteos y frutos secos."],["#c0392b","🔴 Mejor limitarlos","Gaseosas y jugos azucarados, golosinas, facturas, alfajores, galletitas dulces, harinas blancas y dulces en general."]].map(g=>`<div class="card"><h3 style="color:${g[0]}">${g[1]}</h3><p>${g[2]}</p></div>`).join("")+`<p class="s">Es una guía general. Tu equipo de salud ajusta las porciones a tu caso.</p>`;
+async function boot(){if(L.ok!=1)return;if(Date.now()-(+L.last||Date.now())>7*864e5){try{if(await chk(L.h,false)!="ok"){L.ok=0;location.reload();return}L.last=Date.now()}catch(x){$("#err").textContent="Conectate a internet para renovar tu acceso (pasó más de una semana).";return}}start();recheck()}
+boot();
 </script></body></html>
