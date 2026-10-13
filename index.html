@@ -255,6 +255,7 @@ V.sem=()=>`<h2>Semáforo de alimentos</h2>`+[["#4f8a4b","🟢 Comé con libertad
   // Nueva sección educativa: próstata, diabetes y salud urinaria/sexual para todos los géneros.
   V.salud=()=>`<h2>Salud urinaria, próstata y diabetes</h2>
   <p>Un espacio para informarte sin vergüenza ni culpa. Estos temas son frecuentes y muchos tienen tratamiento. La información orienta, pero no reemplaza una consulta ni permite hacer un diagnóstico por cuenta propia.</p>
+  <button class="btn o" onclick="document.getElementById('mujeres').scrollIntoView({behavior:'smooth',block:'start'})">👩 Ir a salud femenina y suelo pélvico</button>
   <div class="card"><h3>🚨 Señales para actuar ahora</h3><ul>
   <li><b>No podés orinar nada:</b> acudí a una guardia de inmediato.</li>
   <li><b>Sangre visible en la orina</b> o fiebre/escalofríos junto con dolor al orinar: necesitás atención médica urgente.</li>
@@ -285,11 +286,79 @@ V.sem=()=>`<h2>Semáforo de alimentos</h2>`+[["#4f8a4b","🟢 Comé con libertad
   <li>Anotá cuándo aparecen los síntomas, cuántas veces orinás de día/noche, si hay dolor, pérdidas o cambios sexuales y qué medicamentos tomás.</li>
   <li>Comentá estos cambios con tu médico clínico, diabetólogo o urólogo. Hay opciones de evaluación y tratamiento.</li></ul>
   </details>
-  <details><summary>🧍‍♀️ También aplica a las mujeres: vejiga, infecciones y salud sexual</summary>
-  <p>La próstata no se aplica a las mujeres, pero la diabetes puede afectar a personas de cualquier género. Puede aumentar el riesgo de infecciones urinarias y, cuando la glucosa está elevada, de infecciones por hongos. También puede afectar los nervios y la circulación, y contribuir a urgencia urinaria, pérdidas, dificultad para vaciar la vejiga, sequedad vaginal, molestias durante las relaciones o cambios en el deseo y la respuesta sexual.</p>
+  <div id="mujeres" style="scroll-margin-top:5rem">
+  <h3>👩 Salud femenina: vejiga, salud sexual y suelo pélvico</h3>
+  <p>Esta parte también es para vos si sos mujer o querés acompañar a alguien de tu familia. La próstata no se aplica a las mujeres, pero la diabetes puede afectar a personas de cualquier género. Puede aumentar el riesgo de infecciones urinarias y, cuando la glucosa está elevada, de infecciones por hongos. También puede afectar los nervios y la circulación, y contribuir a urgencia urinaria, pérdidas, dificultad para vaciar la vejiga, sequedad vaginal, molestias durante las relaciones o cambios en el deseo y la respuesta sexual.</p>
   <p>En la menopausia, los cambios hormonales pueden influir en el control de la glucosa en algunas personas y cambiar la lubricación y la salud vaginal/urinaria. No tenés que resignarte ni sentir vergüenza: consultá con medicina clínica, ginecología o el equipo de diabetes. El tratamiento depende de la causa y puede mejorar los síntomas.</p>
   <p><b>Consultá pronto</b> si tenés ardor al orinar, urgencia o frecuencia nueva, dolor bajo vientre, pérdidas persistentes, picazón o flujo inusual. Fiebre, escalofríos, dolor en la espalda/costado, vómitos o sangre en la orina requieren atención urgente.</p>
+
+  <h3>🧘 Suelo pélvico: qué es y para qué sirve</h3>
+  <p>El suelo pélvico (también llamado piso pélvico) es un conjunto de músculos y tejidos que forman una base de sostén dentro de la pelvis. Ayuda a sostener la vejiga, el útero y el intestino/recto; participa en el control de la orina, los gases y las heces, y en la función sexual. Para trabajar bien, estos músculos necesitan tanto fuerza como capacidad de relajarse y coordinarse.</p>
+  <p><b>No es solo un tema de después del parto ni de la vejez.</b> Puede haber síntomas en distintas etapas de la vida, y son frecuentes. Tener pérdidas, pesadez o dolor no es culpa tuya y no tenés que resignarte: hay evaluación y tratamientos.</p>
+  <div class="card"><h3>¿Qué señales conviene reconocer?</h3><p>Prestá atención a pérdidas al toser, reír o hacer ejercicio; necesidad urgente o frecuente de orinar; presión o sensación de bulto vaginal; dolor pélvico o durante las relaciones; estreñimiento o dificultad para controlar gases o heces. No todas estas señales tienen la misma causa, pero si aparecen de forma repetida merecen consulta.</p><p><b>Importante:</b> no toda molestia se soluciona haciendo Kegel. Algunas personas necesitan aprender a relajar y coordinar estos músculos, especialmente si hay dolor o tensión.</p></div>
+
+  <details><summary>🔎 Señales de que el suelo pélvico puede necesitar atención</summary>
+  <ul>
+  <li><b>Pérdidas con esfuerzo:</b> se escapa orina al toser, estornudar, reír, saltar, levantar peso o hacer ejercicio.</li>
+  <li><b>Urgencia:</b> aparece una necesidad repentina y difícil de aguantar, a veces con escapes o necesidad de ir muchas veces al baño.</li>
+  <li><b>Sensación de peso o bulto:</b> pesadez, presión vaginal o sensación de que algo desciende, que puede empeorar al estar mucho tiempo de pie.</li>
+  <li><b>Dificultad para vaciar:</b> cuesta empezar a orinar, queda sensación de vejiga llena o hay infecciones urinarias repetidas.</li>
+  <li><b>Intestino:</b> escapes de gases o heces, dificultad para llegar al baño, estreñimiento o necesidad de hacer mucha fuerza.</li>
+  <li><b>Dolor o tensión:</b> dolor pélvico, molestias con la penetración, durante o después de las relaciones, o dificultad para relajar la zona.</li>
+  </ul>
+  <p>Estos síntomas pueden tener distintas causas y no confirman por sí solos un trastorno del suelo pélvico. Si son nuevos, frecuentes, empeoran o afectan tu vida cotidiana, pedí una consulta.</p>
   </details>
+
+  <details><summary>🌷 Embarazo, parto, menopausia y otros factores</summary>
+  <p>El embarazo y el parto vaginal pueden estirar o debilitar los tejidos; también puede haber síntomas después de una cesárea. La edad, los cambios hormonales de la menopausia, el estreñimiento crónico, la tos persistente, el exceso de peso, levantar cargas repetidamente y algunas cirugías pueden influir. Los factores varían de una persona a otra, y tener uno no significa que necesariamente vayas a desarrollar un problema.</p>
+  <p>Un posible <b>prolapso de órganos pélvicos</b> ocurre cuando los tejidos que sostienen la vejiga, el útero o el recto pierden parte de su soporte. Puede provocar presión, pesadez o un bulto en la vagina, cambios al orinar o problemas intestinales. No siempre requiere cirugía: el tratamiento depende de los síntomas y puede incluir fisioterapia especializada, cambios para reducir el esfuerzo, un pesario u otras opciones indicadas por el equipo de salud.</p>
+  <p>Después del parto, consultá si tenés pérdidas, dolor, sensación de peso, dificultad para vaciar la vejiga o problemas para controlar gases o heces. No necesitás esperar a que los síntomas sean intensos.</p>
+  </details>
+
+  <details><summary>🌼 SOP (síndrome de ovario poliquístico) y diabetes</summary>
+  <p>El SOP es una condición hormonal y metabólica que puede presentarse durante la etapa reproductiva. No significa que una persona tenga necesariamente quistes ni diabetes. Entre las señales posibles están menstruaciones irregulares o ausentes, acné persistente, aumento de vello facial o corporal y dificultades para ovular; algunas personas no presentan todos estos síntomas.</p>
+  <p>En muchas personas con SOP hay resistencia a la insulina, lo que se relaciona con un mayor riesgo de prediabetes y diabetes tipo 2. Eso no quiere decir que sea inevitable: la evaluación y el seguimiento médico ayudan a conocer el riesgo individual y elegir controles y tratamientos adecuados.</p>
+  <p>Consultá con ginecología o medicina clínica si tus ciclos son muy irregulares, pasan meses sin menstruación, aparecen cambios hormonales importantes o te preocupa la fertilidad. El diagnóstico no se confirma por un solo síntoma ni únicamente por una ecografía; el profesional considera la historia clínica y los estudios necesarios.</p>
+  <p><a href="https://medlineplus.gov/spanish/polycysticovarysyndrome.html" target="_blank" rel="noopener">MedlinePlus: síndrome de ovario poliquístico</a></p>
+  </details>
+
+  <details><summary>🩸 Diabetes y suelo pélvico: qué relación tienen</summary>
+  <p>La diabetes no significa automáticamente que tengas debilidad del suelo pélvico. Sin embargo, la glucosa elevada durante mucho tiempo puede dañar nervios y vasos sanguíneos y afectar la vejiga. Algunas personas notan más frecuencia o urgencia para orinar, escapes o dificultad para sentir si la vejiga está llena y vaciarla por completo. La diabetes también aumenta el riesgo de infecciones urinarias; si se repiten, conviene consultar para investigar la causa.</p>
+  <p>Los síntomas de vejiga pueden coexistir con debilidad del suelo pélvico, prolapso, cambios de la menopausia u otros problemas. No asumas que todo se debe a la diabetes ni empieces un tratamiento sin conocer la causa. Llevar un registro de horarios, escapes, líquidos, síntomas y glucemias puede ayudar a la consulta.</p>
+  <p>Seguir el plan de diabetes, mantener los controles indicados y consultar ante cambios urinarios ayuda a cuidar la salud general, pero no sustituye la evaluación ni garantiza que no aparezcan problemas.</p>
+  </details>
+
+  <details><summary>💪 Ejercicios de Kegel: cómo empezar con cuidado</summary>
+  <p>Los ejercicios de Kegel entrenan la contracción de los músculos del suelo pélvico y pueden ayudar en algunos casos de incontinencia o debilidad. No son la solución para todo el mundo: si tenés dolor pélvico, dolor con las relaciones, dificultad para orinar o defecar, sensación constante de tensión o los ejercicios empeoran los síntomas, no sigas apretando por tu cuenta. A veces se necesita aprender a relajar y coordinar los músculos, no fortalecerlos más.</p>
+  <ol>
+  <li>Elegí una posición cómoda, por ejemplo acostada o sentada, y respirá normalmente.</li>
+  <li>Imaginá que querés evitar que salgan gases y, a la vez, contener suavemente la orina. Debés notar un cierre y una elevación interna, sin apretar fuerte los glúteos, los muslos ni el abdomen.</li>
+  <li>Como práctica inicial orientativa, contraé suavemente durante 3 segundos y después relajá por completo durante 3 a 6 segundos. Probá unas pocas repeticiones, sin dolor ni contener la respiración.</li>
+  <li>La relajación completa es tan importante como contraer. Aumentá gradualmente solo si te resulta cómodo y un profesional no te indicó otra pauta.</li>
+  </ol>
+  <p><b>Importante:</b> no practiques deteniendo el chorro mientras orinás; identificar los músculos de esa manera puede servir una sola vez, pero repetirlo durante la micción puede dificultar el vaciado. Si no estás segura de qué músculos estás usando, consultá con una fisioterapeuta especializada en suelo pélvico, ginecología o medicina clínica para aprender la técnica adecuada.</p>
+  </details>
+
+  <details><summary>🌬️ Relajación y hábitos que ayudan</summary>
+  <ul>
+  <li><b>Respiración diafragmática:</b> sentate cómoda, aflojá mandíbula y hombros; inhalá suavemente dejando expandir el abdomen y exhalá sin empujar. Permití que la zona pélvica se relaje, sin hacer fuerza hacia abajo.</li>
+  <li><b>Evitá el estreñimiento:</b> incorporá fibra de forma gradual, agua según tus indicaciones médicas y movimiento posible. No hagas fuerza excesiva al evacuar.</li>
+  <li><b>Para levantar peso o toser:</b> evitá contener la respiración; exhalá durante el esfuerzo. Si esto desencadena pérdidas o dolor, pedí orientación personalizada.</li>
+  <li><b>Con pérdidas urinarias:</b> no reduzcas drásticamente el agua. Registrá cuándo ocurren, revisá con el equipo de salud si la cafeína u otros hábitos influyen y preguntá por entrenamiento vesical o fisioterapia si corresponde.</li>
+  <li><b>Intimidad y menopausia:</b> la sequedad o el dolor tienen tratamiento. No fuerces una relación dolorosa; conversá con ginecología sobre opciones apropiadas para tu historia clínica.</li>
+  </ul>
+  <p>No todas las personas necesitan la misma rutina. La fisioterapia de suelo pélvico puede evaluar fuerza, coordinación, relajación, respiración y hábitos intestinales/urinarios para adaptar el plan.</p>
+  </details>
+
+  <details><summary>🩺 Cuándo pedir ayuda y qué tratamientos existen</summary>
+  <p>Solicitá una consulta si tenés pérdidas repetidas, sensación de bulto o presión vaginal, infecciones urinarias frecuentes, dolor pélvico, dolor sexual, dificultad para evacuar o cambios persistentes en la vejiga. Según la causa, pueden ayudar la fisioterapia de suelo pélvico, ejercicios específicos, entrenamiento de la vejiga, tratamiento del estreñimiento, medicamentos, un pesario o, en determinados casos, cirugía. No hace falta aceptar las pérdidas como algo inevitable.</p>
+  <p><b>Buscá atención urgente</b> si no podés orinar, si aparece fiebre/escalofríos con dolor en la espalda o el costado, vómitos o sangre visible en la orina. El dolor pélvico súbito e intenso también requiere valoración urgente. Cualquier sangrado después de la menopausia debe ser evaluado pronto por un profesional.</p>
+  <p><b>Para preparar la consulta:</b> anotá cuándo empezaron los síntomas, si hay pérdidas y con qué actividad, cuántas veces orinás de día y de noche, si sentís presión o bulto, cómo están las deposiciones, qué medicamentos usás y si los síntomas se relacionan con la glucemia, el parto o la menopausia. Podés pedir que te expliquen el examen antes de hacerlo y solicitar acompañamiento si te da vergüenza.</p>
+  <p><a href="https://medlineplus.gov/spanish/pelvicfloordisorders.html" target="_blank" rel="noopener">MedlinePlus: problemas del piso pélvico</a></p>
+  <p><a href="https://www.acog.org/womens-health/faqs/problemas-de-apoyo-pelvico" target="_blank" rel="noopener">ACOG: problemas de apoyo pélvico</a></p>
+  <p><a href="https://www.niddk.nih.gov/health-information/informacion-de-la-salud/enfermedades-urologicas/ejercicios-kegel" target="_blank" rel="noopener">NIDDK: ejercicios de Kegel</a></p>
+  </details>
+  </div>
   <details><summary>🛡️ Prevención y cuidado cotidiano</summary>
   <ul><li>Mantené los controles de glucemia y seguí el tratamiento acordado.</li><li>Tomá agua regularmente, salvo que tu equipo de salud te haya indicado restringir líquidos.</li><li>No aguantes la orina durante muchas horas y no te automediques con antibióticos.</li><li>Si hay síntomas urinarios, evitá tomar medicamentos para resfrío o descongestivos sin consultar: algunos pueden empeorar la dificultad para orinar en personas con HBP.</li><li>La actividad física, una alimentación equilibrada, no fumar y el cuidado de la presión y el colesterol favorecen la salud general, pero no sustituyen la evaluación de síntomas.</li><li>No uses suplementos “para la próstata” ni tratamientos para la erección sin consultar, especialmente si tomás otros medicamentos o nitratos.</li></ul>
   </details>
